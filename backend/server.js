@@ -22,6 +22,9 @@ const io = new Server(server, {
 });
 
 
+// Variable globale pour stocker le compteur
+let counter = 0;
+
 io.on("connection", (socket) => {
     // console.log("l'utilisateur vient de se connecter", socket.id)
     socket.on("bouton", (data) => {
@@ -31,13 +34,19 @@ io.on("connection", (socket) => {
 
 
     });
-    
+
     // fonction pour recevoir un message du client
     socket.on("message", (data) => {
         console.log(data)
         socket.broadcast.emit("message_reponse", data)
     });
     
+    // fonction pour recevoir le chiffre des clients et l'additioner
+    socket.on("counter", (data) => {
+        console.log(data);
+        
+        io.emit("counter_server", data);
+    })
 });
 
 

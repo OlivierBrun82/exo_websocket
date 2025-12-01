@@ -16,11 +16,24 @@ function App() {
   const [messages, setMessages] = useState([]);
   // nom de l'user
   const [name, setName] = useState('');
+  // counter qui va s'incrémenter des valeurs donné par les users
+  const [counter, setCounter] = useState(0);
+  // counter qu'on modifie
+  const [inputCounter, setInputCounter] = useState(0);
+
 
 // fonction pour envoyer un message au serveur
   function btnClick(){
     socket.emit("bouton", 'Hello World');
   }
+
+// fonction pour envoyer le chiffre au serveur
+  function incrementer() {
+    socket.emit("counter", [name, inputCounter]);
+    setInputCounter(0);    
+  }
+  // console.log(inputCounter);
+  
 
   // fonction pour recevoir un message du serveur
   useEffect(() => {
@@ -30,11 +43,17 @@ function App() {
     socket.on("message_reponse", (data) => {
       setMessages((prev) => [...prev, data[0]+": " + data[1]]);
     })
+  // fonction pour recevoir le nombre du serveur
+    socket.on("counter_server", (data) => {
+      setCounter(prev => prev + data[1]);
+      setMessages((prev) => [...prev,data[0]+ " a incrémenter de " + data[1]])
+    })
 
     // fonction pour déconnecter le socket
     return () => {
       socket.off("bouton_reponse");
       socket.off("message_reponse");
+      socket.off("counter_server");
     };
 
   }, []);
@@ -42,7 +61,7 @@ function App() {
 // console.log(socket.id);
 
   function envoyer(){
-    if (message.trim === '') {
+    if (message.trim() === '') {
       return;
     }
     // envoi du message au serveur pour moi
@@ -58,6 +77,15 @@ function App() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+          <div>
+            {counter}
+          </div>
+          <input type="number"
+          value={inputCounter}
+          onChange={(e) => setInputCounter(Number(e.target.value))}
+           />
+           <button onClick={incrementer}>incrémenter</button>
+
           <h1>Exo Websocket</h1>
           <div><button onClick={btnClick}>Test</button></div>
         <input type="text"

@@ -14,6 +14,8 @@ function App() {
   const [message, setMessage] = useState('');
   // tout les messages reçus
   const [messages, setMessages] = useState([]);
+  // nom de l'user
+  const [name, setName] = useState('');
 
 // fonction pour envoyer un message au serveur
   function btnClick(){
@@ -26,7 +28,7 @@ function App() {
       console.log(data);
     });
     socket.on("message_reponse", (data) => {
-      setMessages((prev) => [...prev, "Serveur: " + data]);
+      setMessages((prev) => [...prev, data[0]+": " + data[1]]);
     })
 
     // fonction pour déconnecter le socket
@@ -46,12 +48,16 @@ function App() {
     // envoi du message au serveur pour moi
     setMessages((prev) => [...prev, "Moi: " + message]);
 
-    socket.emit("message", message)
+    socket.emit("message", [name, message]);
   };
 
   return (
     <>
       <div>
+        <input type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
           <h1>Exo Websocket</h1>
           <div><button onClick={btnClick}>Test</button></div>
         <input type="text"

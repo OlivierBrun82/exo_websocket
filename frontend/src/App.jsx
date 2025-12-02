@@ -21,19 +21,17 @@ function App() {
   // counter qu'on modifie
   const [inputCounter, setInputCounter] = useState(0);
 
-
-// fonction pour envoyer un message au serveur
+  // fonction pour envoyer un message au serveur
   function btnClick(){
     socket.emit("bouton", 'Hello World');
   }
 
-// fonction pour envoyer le chiffre au serveur
+  // fonction pour envoyer le chiffre au serveur
   function incrementer() {
     socket.emit("counter", [name, inputCounter]);
     setInputCounter(0);    
   }
   // console.log(inputCounter);
-  
 
   // fonction pour recevoir un message du serveur
   useEffect(() => {
@@ -43,7 +41,8 @@ function App() {
     socket.on("message_reponse", (data) => {
       setMessages((prev) => [...prev, data[0]+": " + data[1]]);
     })
-  // fonction pour recevoir le nombre du serveur
+
+    // fonction pour recevoir le nombre du serveur
     socket.on("counter_server", (data) => {
       setCounter(prev => prev + data[1]);
       setMessages((prev) => [...prev,data[0]+ " a incrémenter de " + data[1]])
@@ -58,7 +57,7 @@ function App() {
 
   }, []);
 
-// console.log(socket.id);
+  // console.log(socket.id);
 
   function envoyer(){
     if (message.trim() === '') {
@@ -72,32 +71,51 @@ function App() {
 
   return (
     <>
-      <div>
-        <input type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-          <div>
-            {counter}
+      <div className="app-container">
+        <h1>Exo Websocket</h1>
+        
+        <div className="counter-section">
+          <div className="counter-display">
+            <span className="counter-label">Compteur:</span>
+            <span className="counter-value">{counter}</span>
           </div>
-          <input type="number"
-          value={inputCounter}
-          onChange={(e) => setInputCounter(Number(e.target.value))}
-           />
-           <button onClick={incrementer}>incrémenter</button>
+        </div>
 
-          <h1>Exo Websocket</h1>
-          <div><button onClick={btnClick}>Test</button></div>
-        <input type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        />
-        <button onClick={envoyer}>Envoyer</button>
+        <div className="counter-controls">
+          <div className="input-group">
+            <input 
+              type="number"
+              className="input-field"
+              value={inputCounter}
+              onChange={(e) => setInputCounter(Number(e.target.value))}
+              placeholder="Valeur à incrémenter"
+            />
+            <button onClick={incrementer} className="btn-primary">Incrémenter</button>
+          </div>
+          <button onClick={btnClick} className="btn-secondary">Test</button>
+        </div>
 
-        <div>
-          {messages.map((message, index) => (
-            <div key={index}>{message}</div>
-          ))}
+        <div className="message-section">
+          <div className="input-group">
+            <input 
+              type="text"
+              className="input-field"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Entrez votre message"
+              onKeyPress={(e) => e.key === 'Enter' && envoyer()}
+            />
+            <button onClick={envoyer} className="btn-primary">Envoyer</button>
+          </div>
+        </div>
+
+        <div className="messages-container">
+          <h2>Messages</h2>
+          <div className="messages-list">
+            {messages.map((message, index) => (
+              <div key={index} className="message-item">{message}</div>
+            ))}
+          </div>
         </div>
       </div>
     </>
